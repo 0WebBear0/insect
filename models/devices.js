@@ -5,14 +5,22 @@ const db = require('../infrastructure/db.js')
 const devices = db.define('devices',
     // Описание таблиц
     {
-        id: {
-            type: DataTypes.INTEGER,
+        uuid: {
             primaryKey: true,
             autoIncrement: true,
+            type: DataTypes.UUIDV4,
             allowNull: false
         },
-        uuid: {
-            type: DataTypes.STRING,
+        selectedInsect: {
+            type: DataTypes.BIGINT,
+            allowNull: false
+        },
+        albedo: {
+            type: DataTypes.REAL,
+            allowNull: false
+        },
+        height: {
+            type: DataTypes.REAL,
             allowNull: false
         },
     },

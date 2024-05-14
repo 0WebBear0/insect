@@ -27,7 +27,21 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - models:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
+    networks:
+      - cloud
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      - postgres
+    ports:
+      - "5050:80"
+    restart: unless-stopped
     networks:
       - cloud
 volumes:

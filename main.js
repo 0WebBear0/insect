@@ -1,32 +1,13 @@
 const express = require('express')
-const devices = require("./models/devices");
-const e = require("express");
+const deviceInit = require('./logic/devicesInit')
+const deviceUpdateSettings = require('./logic/deviceUpdateSettings')
+const getAllInsects = require('./logic/getAllInsects')
 
 const app = express()
 
-app.get('/', async function (req, res) {
-    const uuidDevice = req.query.uuid
+app.get('/', deviceInit)
+app.post('/change', deviceUpdateSettings)
 
-    let device = null
-
-    try {
-        const isFindDevice = await devices.findOne({
-            where: {
-                uuid: uuidDevice
-            }
-        })
-
-        if (uuidDevice) {
-            device = await devices.create({
-                uuid: uuidDevice
-            })
-        }
-    }
-    catch (error) {
-        console.log(error)
-    }
-
-    res.send(device)
-})
+app.get('/insects', getAllInsects)
 
 app.listen(80)
