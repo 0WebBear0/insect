@@ -11,8 +11,8 @@ module.exports = async function deviceUpdateSettings (req, res) {
             device = await devices.update(
                 {
                     selectedInsect: newSettings?.selectedInsect || null,
-                    albedo: newSettings?.selectedInsect || null,
-                    height: newSettings?.selectedInsect || null,
+                    albedo: newSettings?.albedo || null,
+                    height: newSettings?.height || null,
                 },
                 {uuid: uuidDevice})
         }

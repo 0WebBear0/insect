@@ -4,6 +4,7 @@
 #include <ESP8266mDNS.h>
 
 #include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
 
 const char* ssid = "chelowek";
 const char* password = "11111111";
@@ -11,11 +12,37 @@ const char* password = "11111111";
 ESP8266WebServer server(80);
 
 void handleRoot() {
-  server.send(200, "text/plain", "hello from esp8266!\r\n");
+  const Insect insects[] = handleGetInsects();
+
+  String postForms = "<html>\
+    <head>\
+      <meta charset=\"utf-8\">\
+      <title>ПАК</title>\
+      <style>\
+        body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
+      </style>\
+    </head>\
+    <body>\
+      <h1>POST form data to /postform/</h1><br>\
+      <form method=\"post\" enctype=\"application/x-www-form-urlencoded\" action=\"/postform/\">\
+        <input type=\"text\" name=\"hello\" value=\"world\"><br>\
+        <input type=\"submit\" value=\"Submit\">";
+      
+      if (insects) {
+        postForms += "<select id=\"insects\">";
+        for (int i = 0; i <= insects.length(); i++) {
+          postForms += "<option value=" + insects[i].wavelengthFavorite + ">"+ insects[i].insectname + "</option>"; 
+        };
+        postForms += "</select>";
+      }
+    postForms += "</form></body></html>";
+  
+  server.send(200, "text/html", postForms);
 }
 
-void handleTest() {
-  String message = "File Not Found\n\n";
+String handleGetInsects() {
+  JsonDocument doc;
+  String message = "";
   
   WiFiClient client;
   HTTPClient http;
@@ -37,7 +64,7 @@ void handleTest() {
       if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
         String payload = http.getString();
         Serial.println(payload);
-        message = payload;
+        message = Insect;
       }
     } else {
       Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
@@ -47,7 +74,7 @@ void handleTest() {
   } else {
     Serial.println("[HTTP] Unable to connect");
   }
-    server.send(404, "text/plain", message);
+    return message;
 }
 
 void handleNotFound() {
@@ -86,7 +113,6 @@ void setup(void) {
   if (MDNS.begin("esp8266")) { Serial.println("MDNS responder started"); }
 
   server.on("/", handleRoot);
-  server.on("/test", handleTest);
 
   server.on("/inline", []() {
     server.send(200, "text/plain", "this works as well");
